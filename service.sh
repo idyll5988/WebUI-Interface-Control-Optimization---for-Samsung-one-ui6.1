@@ -85,6 +85,20 @@ else
     cycles_raw=$(echo "$battery_info" | sed -n 's/.*mSavedBatteryUsage: \([^,]*\).*/\1/p')
     cycles=$((cycles_raw / 100))
 fi
+cpu_temp_file="/sys/class/thermal/thermal_zone1/temp"
+if [ -f "$cpu_temp_file" ]; then
+    cpu_temp=$(cat "$cpu_temp_file")
+    cpu_temp=$((cpu_temp / 1000))
+else
+    cpu_temp="N/A"
+fi
+gpu_temp_file="/sys/class/thermal/thermal_zone3/temp"
+if [ -f "$gpu_temp_file" ]; then
+    gpu_temp=$(cat "$gpu_temp_file")
+    gpu_temp=$((gpu_temp / 1000))
+else
+    gpu_temp="N/A"
+fi
 btemp=$(cat /sys/class/power_supply/battery/temp)
 [[ $"btemp" == "" ]] && [[ -e "/sys/class/power_supply/battery/temp" ]] && btemp=$(cat /sys/class/power_supply/battery/temp) || [[ ${btemp} == "" ]] && [[ -e "/sys/class/power_supply/battery/batt_temp" ]] && btemp=$(cat /sys/class/power_supply/battery/batt_temp)
 btemp=$((btemp / 10))
@@ -93,9 +107,19 @@ bhealth=$(dumpsys battery  | awk '/health/{print $2}')
 mo=$(getprop ro.product.model)
 A=$(getprop ro.product.brand)
 ba=$(cat /sys/class/power_supply/battery/capacity)
+read -r cpu user nice system idle iowait irq softirq steal guest </proc/stat
+cpu_active_prev=$((user + system + nice + softirq + steal))
+cpu_total_prev=$((user + system + nice + softirq + steal + idle + iowait))
+usleep 50000
+read -r cpu user nice system idle iowait irq softirq steal guest </proc/stat
+cpu_active_cur=$((user + system + nice + softirq + steal))
+cpu_total_cur=$((user + system + nice + softirq + steal + idle + iowait))
+cpu_load=$((100 * (cpu_active_cur - cpu_active_prev) / (cpu_total_cur - cpu_total_prev)))
+driversinfo=$(dumpsys SurfaceFlinger | awk '/GLES/ {if (NF >= 13) {print $6,$7,$8,$9,$10,$11,$12,$13} else {for(i=6;i<=(NF >= 13? 13 : NF);i++){printf("%s ",$i)};print ""}}' | tr -d ',')
     screen_status=$(dumpsys window | grep "mScreenOn" | grep true)
     if [[ "${screen_status}" ]]; then
-        > log.txt
+	mkdir -p /data/adb/modules/WebUI/scripts/ll/log
+        > /data/adb/modules/WebUI/scripts/ll/log/配置.log
         devices=$(echo "[ 🌸 运行中😊 ]👉👉👉
 █▓▒▒░░░📲设备性能优化░░░▒▒▓█
 📱CPU数量:$cpus个 
@@ -112,9 +136,18 @@ ba=$(cat /sys/class/power_supply/battery/capacity)
 🔋电池健康:$percentage% 
 🔋电池损耗:$battery_usage_percentage% 
 🔋电池循环:$cycles次 
+🔋官方电池健康损耗:$(dumpsys battery | grep -i msave)
+⛓️CPU 温度:${cpu_temp}°C
+⛓️CPU 负载:$cpu_load%
+⛓️GPU 温度:${gpu_temp}°C
+🔨驱动程序信息:$driversinfo
 🛠️渲染引擎:$mode 
+📱SurfaceFlinger数值:$(dumpsys SurfaceFlinger | grep phase)
+📱色彩模式:$(dumpsys SurfaceFlinger | grep ColorMode)
+💾缓存用量=已用:`free -g|grep "Mem"|awk '{print $3}'`"G" 剩余:$((`free -g|grep "Mem"|awk '{print $2}'`-`free -g|grep "Mem"|awk '{print $3}'`))"G"
+⛏️安全补丁:$(getprop ro.build.version.security_patch)
 🔒SELinux政策:$slstatus")
-        echo "$devices" >> log.txt
-        sleep 3
+        echo "$devices" >> /data/adb/modules/WebUI/scripts/ll/log/配置.log
+        sleep 2
     fi 
 done
