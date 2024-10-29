@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>读取日志文件</title>
-	
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
@@ -17,8 +17,9 @@
 
         h1 {
             color: #007BFF;
-            font-size: 30px;
+            font-size: 25px;
             line-height: 1.5;
+            margin-bottom: 5px;
         }
 
         pre {
@@ -35,12 +36,12 @@
             font-size: 16px;
         }
 
-     .log-content {
+       .log-content {
             max-height: 400px;
             border: 1px solid #ccc;
             border-radius: 5px;
             padding: 10px;
-            margin-top: 20px;
+            margin-top: 5px;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #888 transparent;
@@ -48,7 +49,7 @@
             cursor: move;
         }
 
-     .button-group {
+       .button-group {
             display: flex;
             justify-content: center;
             gap: 10px;
@@ -64,19 +65,19 @@
             color: #fff;
         }
 
-     .modal-content {
+       .modal-content {
             border-radius: 8px;
             background-color: #fff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-     .modal-header {
+       .modal-header {
             background-color: #d9edf7;
             color: #31708f;
             border-bottom: 1px solid #ced4da;
         }
 
-     .modal button {
+       .modal button {
             border-radius: 5px;
             font-size: 14px;
         }
@@ -96,7 +97,7 @@
             font-size: 14px;
         }
 
-     .log-content code {
+       .log-content code {
             font-family: 'Consolas', monospace;
             font-size: 14px;
             color: #000;
@@ -106,16 +107,86 @@
             text-shadow: 1px 1px 1px #aaa;
         }
 
-        /* 错误信息用红色显示 */
-     .log-content code span.error {
+       .log-content code span.error {
             color: #ff0000;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #333;
+                color: #fff;
+            }
+
+            body h1 {
+                color: #fff;
+            }
+
+            body pre {
+                background-color: #444;
+            }
+
+            body.log-content {
+                border-color: #555;
+                background-color: #444;
+            }
+
+            body.log-content code {
+                color: #fff;
+                background-color: #555;
+            }
+
+            body.log-content code span.error {
+                color: #ff0000;
+            }
+
+            body.button-group button {
+                background-color: #555;
+                border-color: #555;
+            }
+
+            body.button-group button:hover {
+                background-color: #777;
+                color: #fff;
+            }
+
+            body.button-group button:active {
+                background-color: #999;
+                color: #fff;
+            }
+
+            body.modal-content {
+                background-color: #444;
+                border-color: #555;
+                color: #fff;
+            }
+
+            body.modal-header {
+                background-color: #555;
+                color: #fff;
+            }
+
+            body.modal button {
+                background-color: #555;
+                border-color: #555;
+                color: #000;
+            }
+
+            body h1.text-blue {
+                color: #007BFF;
+            }
+
+            #confirmClearModal.modal-body,
+            #graphicOptimizationModal.modal-body,
+            #apatchReadableModal.modal-body {
+                color: #000;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h1 class="mb-5 text-center">idyll_负优化调节™® 面板</h1>
+    <div>
+        <h1 class="mb-5 text-center text-blue">idyll_负优化调节™® 面板</h1>
         <div class="card log-content" id="logContentContainer">
             <pre><code id="logContent">正在加载...</code></pre>
         </div>
@@ -201,7 +272,7 @@
                         <h5 class="modal-title" id="apatchReadableModalLabel">APatch-KSU可读写设置</h5>
                     </div>
                     <div class="modal-body">
-                        此功能只支持 APatch 与 KSU 通过 OverlayFS 实现分区可读写。您确定要开启吗？
+                        此功能只支持 APatch 与 KSU 通过 OverlayFS 实现分区可读写。您确定要开启吗？开启后重启！
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -216,20 +287,23 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script type="module">
-        let t = 0;
+
+        let callbackSequenceNumber = 0;
         let logEntries = [];
         let currentPage = 1;
         const logsPerPage = 10;
 
         function execCommand(command, args = {}) {
             return new Promise((resolve, reject) => {
-                let callbackName = `exec_callback_${Date.now()}_${t++}`;
+
+                let callbackName = `exec_callback_${Date.now()}_${callbackSequenceNumber++}`;
                 window[callbackName] = (errno, stdout, stderr) => {
                     if (errno === 0) {
                         resolve({ errno, stdout, stderr });
                     } else {
                         reject({ errno, stdout, stderr });
                     }
+
                     delete window[callbackName];
                 };
                 ksu.exec(command, JSON.stringify(args), callbackName);
@@ -245,7 +319,131 @@
             }
             console.error(errorMessage);
             alert(errorMessage);
+
             throw new Error(errorMessage);
+        }
+
+        async function readLogFile() {
+            try {
+                console.log("尝试读取日志文件...");
+                let { errno, stdout, stderr } = await execCommand("cat /data/adb/modules/WebUI/scripts/ll/log/配置.log");
+                if (errno === 0) {
+                    return stdout || "日志文件为空。";
+                } else {
+                    handleError('读取日志文件', `读取日志文件时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                    return null;
+                }
+            } catch (error) {
+                handleError('读取日志文件', error);
+                return null;
+            }
+        }
+
+        async function processLogDisplay() {
+            const logText = await readLogFile();
+            if (logText) {
+
+                let processedLog = logText.replace(/ERROR/g, '<span class="error">ERROR</span>');
+                document.getElementById("logContent").innerHTML = processedLog;
+            } else {
+                document.getElementById("logContent").textContent = '读取日志文件时出错。';
+            }
+            hljs.highlightElement(document.getElementById("logContent"));
+        }
+
+        async function clearLog() {
+            try {
+                if (confirm('您确定要清空日志文件吗？此操作无法撤销。')) {
+                    console.log("尝试清空日志文件...");
+                    let { errno, stdout, stderr } = await execCommand('rm -f /data/adb/modules/WebUI/scripts/ll/log/配置.log');
+                    if (errno === 0) {
+                        document.getElementById("logContent").textContent = "日志文件清空成功。";
+                        await processLogDisplay();
+                    } else {
+                        handleError('清空日志文件', `清空日志文件时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                    }
+                }
+            } catch (error) {
+                handleError('清空日志文件', error);
+            }
+        }
+
+        async function enableGraphicOptimization() {
+            try {
+                console.log("开启图形性能优化...");
+                let commands = [
+                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.enable true",
+                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.timeout 10",
+                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.interpolation false",
+                    "su -c cmd device_config put surfaceflinger surfaceflinger.layers.max 100",
+                    "su -c cmd device_config put surfaceflinger surfaceflinger.layers.default 10",
+                    "su -c cmd device_config put surfaceflinger set_max_frame_rate_multiplier 0.5"
+                ];
+                for (let command of commands) {
+                    let { errno, stdout, stderr } = await execCommand(command);
+                    if (errno!== 0) {
+                        handleError('开启图形性能优化', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                    }
+                }
+                console.log("图形性能优化开启成功。");
+            } catch (error) {
+                handleError('开启图形性能优化', error);
+            }
+        }
+
+        async function disableGraphicOptimization() {
+            try {
+                console.log("关闭图形性能优化...");
+                let commands = [
+                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.enable reset",
+                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.timeout reset",
+                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.interpolation reset",
+                    "su -c cmd device_config put surfaceflinger surfaceflinger.layers.max reset",
+                    "su -c cmd device_config put surfaceflinger surfaceflinger.layers.default reset",
+                    "su -c cmd device_config put surfaceflinger set_max_frame_rate_multiplier reset"
+                ];
+                for (let command of commands) {
+                    let { errno, stdout, stderr } = await execCommand(command);
+                    if (errno!== 0) {
+                        handleError('关闭图形性能优化', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                    }
+                }
+                console.log("图形性能优化关闭成功。");
+            } catch (error) {
+                handleError('关闭图形性能优化', error);
+            }
+        }
+
+        async function enableApatchReadable() {
+            try {
+                console.log("开启 APatch-KSU 可读写...");
+                let commands = [
+                    "su -c mkdir -p /data/adb/modules/.rw/{system,vendor,system_ext,product}/{upperdir,workdir}"
+                ];
+                for (let command of commands) {
+                    let { errno, stdout, stderr } = await execCommand(command);
+                    if (errno!== 0) {
+                        handleError('开启 APatch-KSU 可读写', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                    }
+                }
+                console.log("APatch-KSU 可读写开启成功。");
+            } catch (error) {
+                handleError('开启 APatch-KSU 可读写', error);
+            }
+        }
+
+        async function disableApatchReadable() {
+            try {
+                console.log("关闭 APatch-KSU 可读写...");
+                let command = 'rm -rf /data/adb/modules/.rw';
+                let { errno, stdout, stderr } = await execCommand(command);
+                if (errno!== 0) {
+                    handleError('关闭 APatch-KSU 可读时出错', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                }
+                console.log("APatch-KSU 可读写关闭成功。");
+            } catch (error) {
+                handleError('关闭 APatch-KSU 可读时出错', error);
+            }
         }
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -260,8 +458,9 @@
             const searchOption = document.getElementById("searchOption");
 
             const greenDotOption = document.getElementById("greenDotOption");
- 
+
             const apatchReadableSwitch = document.getElementById("apatchReadableSwitch");
+
 
             const logContentContainer = document.getElementById("logContentContainer");
             let isDragging = false;
@@ -286,129 +485,6 @@
                 isDragging = false;
                 logContentContainer.style.cursor = 'move';
             });
-
-            async function readLogFile() {
-                try {
-                    console.log("尝试读取日志文件...");
-                    let { errno, stdout, stderr } = await execCommand("cat /data/adb/modules/WebUI/scripts/ll/log/配置.log");
-                    if (errno === 0) {
-                        return stdout || "日志文件为空。";
-                    } else {
-                        handleError('读取日志文件', `读取日志文件时出错：错误号 ${errno}，标准错误信息：${stderr}`);
-                        return null;
-                    }
-                } catch (error) {
-                    handleError('读取日志文件', error);
-                    return null;
-                }
-            }
-
-            async function processLogDisplay() {
-                const logText = await readLogFile();
-                if (logText) {
-
-                    let processedLog = logText.replace(/ERROR/g, '<span class="error">ERROR</span>');
-                    logContent.innerHTML = processedLog;
-                } else {
-                    logContent.textContent = '读取日志文件时出错。';
-                }
-                hljs.highlightElement(logContent);
-            }
-
-            async function clearLog() {
-                if (confirm('您确定要清空日志文件吗？此操作无法撤销。')) {
-                    try {
-                        console.log("尝试清空日志文件...");
-                        let { errno, stdout, stderr } = await execCommand('echo "" > /data/adb/modules/WebUI/scripts/ll/log/配置.log');
-                        if (errno === 0) {
-                            logContent.textContent = "日志文件清空成功。";
-                            await processLogDisplay();
-                        } else {
-                            handleError('清空日志文件', `清空日志文件时出错：错误号 ${errno}，标准错误信息：${stderr}`);
-                        }
-                    } catch (error) {
-                        handleError('清空日志文件', error);
-                    }
-                }
-            }
-
-            async function enableGraphicOptimization() {
-                try {
-                    console.log("开启图形性能优化...");
-                    let commands = [
-                        "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.enable true",
-                        "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.timeout 10",
-                        "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.interpolation false",
-                        "su -c cmd device_config put surfaceflinger surfaceflinger.layers.max 100",
-                        "su -c cmd device_config put surfaceflinger surfaceflinger.layers.default 10",
-                        "su -c cmd device_config put surfaceflinger set_max_frame_rate_multiplier 0.5"
-                    ];
-                    for (let command of commands) {
-                        let { errno, stdout, stderr } = await execCommand(command);
-                        if (errno!== 0) {
-                            handleError('开启图形性能优化', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
-                        }
-                    }
-                    console.log("图形性能优化开启成功。");
-                } catch (error) {
-                    handleError('开启图形性能优化', error);
-                }
-            }
-
-            async function disableGraphicOptimization() {
-                try {
-                    console.log("关闭图形性能优化...");
-                    let commands = [
-                        "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.enable reset",
-                        "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.timeout reset",
-                        "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.interpolation reset",
-                        "su -c cmd device_config put surfaceflinger surfaceflinger.layers.max reset",
-                        "su -c cmd device_config put surfaceflinger surfaceflinger.layers.default reset",
-                        "su -c cmd device_config put surfaceflinger set_max_frame_rate_multiplier reset"
-                    ];
-                    for (let command of commands) {
-                        let { errno, stdout, stderr } = await execCommand(command);
-                        if (errno!== 0) {
-                            handleError('关闭图形性能优化', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
-                        }
-                    }
-                    console.log("图形性能优化关闭成功。");
-                } catch (error) {
-                    handleError('关闭图形性能优化', error);
-                }
-            }
-
-            async function enableApatchReadable() {
-                try {
-                    console.log("开启 APatch-KSU 可读写...");
-                    let commands = [
-                        "su -c mkdir -p /data/adb/modules/.rw/{system,vendor,system_ext,product}/{upperdir,workdir}"
-                    ];
-                    for (let command of commands) {
-                        let { errno, stdout, stderr } = await execCommand(command);
-                        if (errno!== 0) {
-                            handleError('开启 APatch-KSU 可读写', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
-                        }
-                    }
-                    console.log("APatch-KSU 可读写开启成功。");
-                } catch (error) {
-                    handleError('开启 APatch-KSU 可读写', error);
-                }
-            }
-
-            async function disableApatchReadable() {               
-                try {
-                    console.log("关闭 APatch-KSU 可读写...");
-                    let command = 'rm -rf /data/adb/modules/.rw';
-                    let { errno, stdout, stderr } = await execCommand(command);
-                    if (errno!== 0) {
-                        handleError('关闭 APatch-KSU 可读写', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
-                    }
-                    console.log("APatch-KSU 可读写关闭成功。");
-                } catch (error) {
-                    handleError('关闭 APatch-KSU 可读时出错', error);
-                }
-            }
 
             refreshLogBtn.addEventListener("click", processLogDisplay);
             clearLogBtn.addEventListener("click", () => {
@@ -466,52 +542,61 @@
                 }
             });
 
-            async function checkPreviousStates() {
+            async function checkGraphicOptimizationState() {
                 try {
                     let { errno, stdout, stderr } = await execCommand("su -c cmd device_config get surfaceflinger surfaceflinger.vsync.enable");
                     if (errno === 0 && stdout.trim() === "true") {
-                        graphicOptimizationSwitch.checked = true;
+                        return true;
                     } else {
-                        graphicOptimizationSwitch.checked = false;
-                        console.log(`检查图形性能优化状态出错。错误号: ${errno}, 标准输出: ${stdout}, 标准错误: ${stderr}`);
+                        return false;
                     }
                 } catch (error) {
                     console.error("检查图形性能优化状态时出错:", error);
+                    return false;
                 }
+            }
 
+            async function checkGreenDotState() {
                 try {
                     let { errno, stdout } = await execCommand("su -c cmd device_config get privacy location_indicators_enabled");
-                    greenDotOption.value = errno === 0 && stdout.trim() === "false"? "禁用" : "恢复";
-                    if (!errno === 0) {
-                        console.log(`检查禁用恢复绿点状态出错。错误号: ${errno}, 标准输出: ${stdout}`);
-                    }
+                    return errno === 0 && stdout.trim() === "false"? "禁用" : "恢复";
                 } catch (error) {
                     console.error("检查禁用恢复绿点状态时出错:", error);
+                    return "未知状态";
                 }
+            }
 
+            async function checkApatchReadableState() {
                 try {
                     let { errno, stdout } = await execCommand("ls /data/adb/modules/.rw");
-                    apatchReadableSwitch.checked = errno === 0;
-                    if (!errno === 0) {
-                        console.log(`检查 APatch-KSU 可读写状态出错。错误号: ${errno}, 标准输出: ${stdout}`);
-                    }
+                    return errno === 0;
                 } catch (error) {
                     console.error("检查 APatch-KSU 可读写状态时出错:", error);
+                    return false;
                 }
+            }
 
+            async function checkSearchOptionState() {
                 try {
                     let { errno, stdout, stderr } = await execCommand("su -c cmd settings get secure cn_support_circe_to_search");
                     if (errno === 0 && stdout.trim() === "1") {
-                        searchOption.value = "google";
+                        return "google";
                     } else if (errno === 0 && stdout.trim() === "0") {
-                        searchOption.value = "baidu";
-                    }
-                    if (!errno === 0) {
-                        console.log(`检查搜索选项状态出错。错误号: ${errno}, 标准输出: ${stdout}, 标准错误: ${stderr}`);
+                        return "baidu";
+                    } else {
+                        return "未知选项";
                     }
                 } catch (error) {
                     console.error("检查搜索选项状态时出错:", error);
+                    return "未知选项";
                 }
+            }
+
+            async function checkPreviousStates() {
+                graphicOptimizationSwitch.checked = await checkGraphicOptimizationState();
+                greenDotOption.value = await checkGreenDotState();
+                apatchReadableSwitch.checked = await checkApatchReadableState();
+                searchOption.value = await checkSearchOptionState();
 
                 try {
                     let { errno, stdout, stderr } = await execCommand("getprop | grep 'oneui' | awk -F': ' '{print $2}' | tr -d '[]'");
@@ -617,6 +702,55 @@
 
             await checkPreviousStates();
             await processLogDisplay();
+
+            function adaptResolution() {
+                const container = document.querySelector('.container');
+                if (container) {
+                    const windowWidth = window.innerWidth;
+                    const windowHeight = window.innerHeight;
+                    container.style.width = windowWidth + 'px';
+                    container.style.height = windowHeight + 'px';
+
+                    const baseFontSize = 16;
+                    const scaleFactor = Math.min(windowWidth / 1920, windowHeight / 1080);
+                    document.documentElement.style.fontSize = baseFontSize * scaleFactor + 'px';
+                }
+            }
+
+            function debounce(func, delay) {
+                let timer;
+                return function() {
+                    const context = this;
+                    const args = arguments;
+                    clearTimeout(timer);
+                    timer = setTimeout(() => func.apply(context, args), delay);
+                };
+            }
+
+            const debouncedAdaptResolution = debounce(adaptResolution, 200);
+
+            window.addEventListener('resize', debouncedAdaptResolution);
+
+            adaptResolution();
+
+
+            function checkAndApplyDarkMode() {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    document.body.classList.add('dark-mode');
+
+                    document.querySelector('h1.text-blue').style.color = '#007BFF';
+                    document.querySelectorAll('body.dark-mode *').forEach(element => {
+                        if (element.tagName!== 'H1') {
+                            element.style.color = '#000';
+                        }
+                    });
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+
+            checkAndApplyDarkMode();
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', checkAndApplyDarkMode);
         });
     </script>
 </body>

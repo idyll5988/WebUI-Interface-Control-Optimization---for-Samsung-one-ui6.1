@@ -118,9 +118,8 @@ cpu_load=$((100 * (cpu_active_cur - cpu_active_prev) / (cpu_total_cur - cpu_tota
 driversinfo=$(dumpsys SurfaceFlinger | awk '/GLES/ {if (NF >= 13) {print $6,$7,$8,$9,$10,$11,$12,$13} else {for(i=6;i<=(NF >= 13? 13 : NF);i++){printf("%s ",$i)};print ""}}' | tr -d ',')
     screen_status=$(dumpsys window | grep "mScreenOn" | grep true)
     if [[ "${screen_status}" ]]; then
-	mkdir -p /data/adb/modules/WebUI/scripts/ll/log
         > /data/adb/modules/WebUI/scripts/ll/log/配置.log
-        devices=$(echo "[ 🌸 运行中😊 ]👉👉👉
+			devices=$(echo "[ 🌸 运行中😊 ]👉👉👉
 █▓▒▒░░░📲设备性能优化░░░▒▒▓█
 📱CPU数量:$cpus个 
 📱手机品牌:$A 
@@ -147,7 +146,19 @@ driversinfo=$(dumpsys SurfaceFlinger | awk '/GLES/ {if (NF >= 13) {print $6,$7,$
 💾缓存用量=已用:`free -g|grep "Mem"|awk '{print $3}'`"G" 剩余:$((`free -g|grep "Mem"|awk '{print $2}'`-`free -g|grep "Mem"|awk '{print $3}'`))"G"
 ⛏️安全补丁:$(getprop ro.build.version.security_patch)
 🔒SELinux政策:$slstatus")
-        echo "$devices" >> /data/adb/modules/WebUI/scripts/ll/log/配置.log
+if [ "$KSU" = "true" ]; then
+    version_info="👺KernelSU版本=$KSU_KERNEL_VER_CODE (kernel) + $KSU_VER_CODE (ksud)"
+elif [ "$APATCH" = "true" ]; then
+    APATCH_VER=$(cat "/data/adb/ap/version")
+    version_info="👺APatch版本=$APATCH_VER"
+else
+    magisk_version=$(magisk -v)
+    magisk_version_number=$(magisk -V)
+    version_info="👺Magisk版本=$magisk_version 👺Magisk版本号=$magisk_version_number"
+fi
+devices=$(echo "$version_info
+$devices")
+echo "$devices" >> /data/adb/modules/WebUI/scripts/ll/log/配置.log
         sleep 2
     fi 
 done
