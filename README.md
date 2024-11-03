@@ -16,6 +16,8 @@ WebUI-Interface Control Optimization - for Samsung one ui6.1
 
 加入部分在oneui6.1系统下禁用部分功能
 
+加入三星官方关闭温控功能
+
 Optimize performance
 
 Avoid memory leaks
@@ -32,7 +34,9 @@ Add APatch-KSU partition read/write.
 
 Add disable some functions under oneui 6.1 system.
 
-![1192B21CAC0668366463860234A23C65](https://github.com/user-attachments/assets/d8c3dbbb-b883-423a-92c5-8b9dd03ec850)
+Join Samsung in officially turning off temperature control
+
+![C2264EB36C366EFD6801FF04365E9785](https://github.com/user-attachments/assets/8274e8f5-c3c4-4532-8272-adc18f339975)
 
 
 WebUI详情查看-切换谷歌百度识屏-绿点（位置和摄像头及麦克风指示器）禁用恢复
