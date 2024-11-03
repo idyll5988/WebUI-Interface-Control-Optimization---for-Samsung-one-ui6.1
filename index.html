@@ -5,9 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>读取日志文件</title>
-
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/default.min.css">
     <style>
         body {
@@ -36,7 +34,7 @@
             font-size: 16px;
         }
 
-       .log-content {
+        .log-content {
             max-height: 400px;
             border: 1px solid #ccc;
             border-radius: 5px;
@@ -49,7 +47,7 @@
             cursor: move;
         }
 
-       .button-group {
+        .button-group {
             display: flex;
             justify-content: center;
             gap: 10px;
@@ -65,19 +63,19 @@
             color: #fff;
         }
 
-       .modal-content {
+        .modal-content {
             border-radius: 8px;
             background-color: #fff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-       .modal-header {
+        .modal-header {
             background-color: #d9edf7;
             color: #31708f;
             border-bottom: 1px solid #ced4da;
         }
 
-       .modal button {
+        .modal button {
             border-radius: 5px;
             font-size: 14px;
         }
@@ -96,8 +94,8 @@
         #graphicOptimizationModal.modal-body {
             font-size: 14px;
         }
-
-       .log-content code {
+		
+        .log-content code {
             font-family: 'Consolas', monospace;
             font-size: 14px;
             color: #000;
@@ -107,7 +105,7 @@
             text-shadow: 1px 1px 1px #aaa;
         }
 
-       .log-content code span.error {
+        .log-content code span.error {
             color: #ff0000;
         }
 
@@ -193,22 +191,20 @@
         <div class="button-group">
             <button id="refreshLogBtn" class="btn btn-primary">刷新日志</button>
             <button id="clearLogBtn" class="btn btn-danger">清空日志</button>
+            <button id="openThermalSettingsBtn" class="btn btn-info">三星温控设置</button> 
         </div>
         <br>
-
         <form id="systemOptimizationForm">
             <div class="form-check form-switch">
                 <label for="graphicOptimizationSwitch">图形性能优化</label>
                 <input class="form-check-input" type="checkbox" role="switch" id="graphicOptimizationSwitch">
             </div>
             <br>
-
             <div class="form-check form-switch">
                 <label for="apatchReadableSwitch">APatch-KSU可读写</label>
                 <input class="form-check-input" type="checkbox" role="switch" id="apatchReadableSwitch">
             </div>
             <br>
-
             <div class="form-group">
                 <label for="searchOption">谷歌与百度识屏切换：</label>
                 <select id="searchOption">
@@ -217,7 +213,6 @@
                 </select>
             </div>
             <br>
-
             <div class="form-group">
                 <label for="greenDotOption">禁用与恢复绿点切换：</label>
                 <select id="greenDotOption">
@@ -226,7 +221,6 @@
                 </select>
             </div>
         </form>
-
         <div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -450,6 +444,7 @@
             const logContent = document.getElementById("logContent");
             const refreshLogBtn = document.getElementById("refreshLogBtn");
             const clearLogBtn = document.getElementById("clearLogBtn");
+            const openThermalSettingsBtn = document.getElementById("openThermalSettingsBtn"); 
             const confirmClearModal = new bootstrap.Modal(document.getElementById("confirmClearModal"), { keyboard: false });
             const confirmClearBtn = document.getElementById("confirmClearBtn");
 
@@ -460,7 +455,6 @@
             const greenDotOption = document.getElementById("greenDotOption");
 
             const apatchReadableSwitch = document.getElementById("apatchReadableSwitch");
-
 
             const logContentContainer = document.getElementById("logContentContainer");
             let isDragging = false;
@@ -490,6 +484,17 @@
             clearLogBtn.addEventListener("click", () => {
                 confirmClearModal.show();
                 confirmClearBtn.addEventListener("click", clearLog);
+            });
+
+            openThermalSettingsBtn.addEventListener("click", async () => {
+                try {
+                    console.log("尝试打开三星温控设置...");
+                    await execCommand("am start -n com.sec.android.sdhms/com.sec.android.sdhms.debugger.ui.ThermalLimitStatusActivity");
+                    console.log("三星温控设置已打开。");
+                } catch (error) {
+                    handleError("打开三星温控设置", error);
+                    console.error('打开三星温控设置出错。错误信息:', error);
+                }
             });
 
             graphicOptimizationSwitch.addEventListener("change", async () => {
@@ -732,7 +737,6 @@
             window.addEventListener('resize', debouncedAdaptResolution);
 
             adaptResolution();
-
 
             function checkAndApplyDarkMode() {
                 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
