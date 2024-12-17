@@ -18,6 +18,8 @@ WebUI-Interface Control Optimization - for Samsung one ui6.1
 
 加入三星官方解除温控功能
 
+如果是网络问题导致资源无法加载，尝试更换网络环境或者使用VPN服务
+
 Optimize performance
 
 Avoid memory leaks
@@ -35,6 +37,8 @@ Add APatch-KSU partition read/write.
 Add disable some functions under oneui 6.1 system.
 
 Join Samsung's Official Undo Temperature Control
+
+If it's a network problem that prevents resources from loading, try changing your network environment or using a VPN service
 
 ![C2264EB36C366EFD6801FF04365E9785](https://github.com/user-attachments/assets/8274e8f5-c3c4-4532-8272-adc18f339975)
 
