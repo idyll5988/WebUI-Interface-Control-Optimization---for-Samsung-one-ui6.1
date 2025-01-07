@@ -11,13 +11,14 @@
         body {
             margin: 20px;
             font-family: Arial, sans-serif;
+            background-color: #fff;
+            color: #000;
         }
 
         h1 {
             color: #007BFF;
-            font-size: 25px;
-            line-height: 1.5;
-            margin-bottom: 5px;
+            font-size: 32px;
+            margin-bottom: 10px;
         }
 
         pre {
@@ -28,10 +29,9 @@
         }
 
         button {
-            cursor: pointer;
-            margin-top: 20px;
             padding: 10px 20px;
             font-size: 16px;
+            cursor: pointer;
         }
 
         .log-content {
@@ -51,6 +51,7 @@
             display: flex;
             justify-content: center;
             gap: 10px;
+            margin-top: 20px;
         }
 
         button:hover {
@@ -65,7 +66,6 @@
 
         .modal-content {
             border-radius: 8px;
-            background-color: #fff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
@@ -80,21 +80,23 @@
             font-size: 14px;
         }
 
-        #graphicOptimizationModal.modal-content {
+        /* 图形性能优化开关的模态框样式 */
+        #graphicOptimizationModal .modal-content {
             background-color: #f5f5f5;
             border: 2px solid #888;
             border-radius: 10px;
         }
 
-        #graphicOptimizationModal.modal-header {
+        #graphicOptimizationModal .modal-header {
             background-color: #d9edf7;
             color: #31708f;
         }
 
-        #graphicOptimizationModal.modal-body {
+        #graphicOptimizationModal .modal-body {
             font-size: 14px;
         }
-		
+
+        /* 日志内容字体美化 */
         .log-content code {
             font-family: 'Consolas', monospace;
             font-size: 14px;
@@ -105,77 +107,76 @@
             text-shadow: 1px 1px 1px #aaa;
         }
 
+        /* 错误信息用红色显示 */
         .log-content code span.error {
             color: #ff0000;
         }
 
+        /* 黑暗模式样式跟随系统 */
         @media (prefers-color-scheme: dark) {
             body {
                 background-color: #333;
                 color: #fff;
             }
 
-            body h1 {
+            h1 {
                 color: #fff;
             }
 
-            body pre {
+            pre {
                 background-color: #444;
+                color: #fff;
             }
 
-            body.log-content {
+            .log-content {
+                background-color: #444;
                 border-color: #555;
-                background-color: #444;
             }
 
-            body.log-content code {
-                color: #fff;
+            .log-content code {
                 background-color: #555;
+                color: #fff;
             }
 
-            body.log-content code span.error {
+            .log-content code span.error {
                 color: #ff0000;
             }
 
-            body.button-group button {
+            .button-group button {
                 background-color: #555;
                 border-color: #555;
             }
 
-            body.button-group button:hover {
+            .button-group button:hover {
                 background-color: #777;
                 color: #fff;
             }
 
-            body.button-group button:active {
+            .button-group button:active {
                 background-color: #999;
                 color: #fff;
             }
 
-            body.modal-content {
+            .modal-content {
                 background-color: #444;
                 border-color: #555;
                 color: #fff;
             }
 
-            body.modal-header {
+            .modal-header {
                 background-color: #555;
                 color: #fff;
             }
 
-            body.modal button {
+            .modal button {
                 background-color: #555;
                 border-color: #555;
                 color: #000;
             }
 
-            body h1.text-blue {
-                color: #007BFF;
-            }
-
-            #confirmClearModal.modal-body,
-            #graphicOptimizationModal.modal-body,
-            #apatchReadableModal.modal-body {
+            #confirmClearModal .modal-body,
+            #graphicOptimizationModal .modal-body,
+            #apatchReadableModal .modal-body {
                 color: #000;
             }
         }
@@ -184,27 +185,31 @@
 
 <body>
     <div>
-        <h1 class="mb-5 text-center text-blue">idyll_负优化调节™® 面板</h1>
-        <div class="card log-content" id="logContentContainer">
+        <h1 class="text-blue">idyll_负优化调节™® 面板</h1>
+        <div class="log-content" id="logContentContainer">
             <pre><code id="logContent">正在加载...</code></pre>
         </div>
+
         <div class="button-group">
             <button id="refreshLogBtn" class="btn btn-primary">刷新日志</button>
-            <button id="clearLogBtn" class="btn btn-danger">清空日志</button>
-            <button id="openThermalSettingsBtn" class="btn btn-info">三星温控设置</button> 
+            <button id="clearLogBtn" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmClearModal">清空日志</button>
+            <button id="openThermalSettingsBtn" class="btn btn-info">三星温控设置</button>
         </div>
-        <br>
+
+        <!-- 添加图形性能优化部分 -->
         <form id="systemOptimizationForm">
             <div class="form-check form-switch">
-                <label for="graphicOptimizationSwitch">图形性能优化</label>
+                <label for="graphicOptimizationSwitch">图形性能显示优化</label>
                 <input class="form-check-input" type="checkbox" role="switch" id="graphicOptimizationSwitch">
             </div>
-            <br>
+
+            <!-- 添加新功能 APatch-KSU可读写 -->
             <div class="form-check form-switch">
-                <label for="apatchReadableSwitch">APatch-KSU可读写</label>
+                <label for="apatchReadableSwitch">APatch-KSU分区读写</label>
                 <input class="form-check-input" type="checkbox" role="switch" id="apatchReadableSwitch">
             </div>
-            <br>
+
+            <!-- 添加谷歌百度选项 -->
             <div class="form-group">
                 <label for="searchOption">谷歌与百度识屏切换：</label>
                 <select id="searchOption">
@@ -212,7 +217,8 @@
                     <option value="baidu">百度</option>
                 </select>
             </div>
-            <br>
+
+            <!-- 添加禁用恢复绿点选项 -->
             <div class="form-group">
                 <label for="greenDotOption">禁用与恢复绿点切换：</label>
                 <select id="greenDotOption">
@@ -221,17 +227,16 @@
                 </select>
             </div>
         </form>
-        <div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearModalLabel"
-            aria-hidden="true">
+
+        <!-- 清空日志确认模态框 -->
+        <div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="confirmClearModalLabel">确认清空日志</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <div class="modal-body">
-                        您确定要清空日志文件吗？此操作无法撤销。
-                    </div>
+                    <div class="modal-body">您确定要清空日志文件吗？此操作无法撤销！</div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-danger" id="confirmClearBtn">确认清空</button>
@@ -240,16 +245,14 @@
             </div>
         </div>
 
-        <div class="modal fade" id="graphicOptimizationModal" tabindex="-1" aria-labelledby="graphicOptimizationModalLabel"
-            aria-hidden="true">
+        <!-- 图形性能优化模态框 -->
+        <div class="modal fade" id="graphicOptimizationModal" tabindex="-1" aria-labelledby="graphicOptimizationModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="graphicOptimizationModalLabel">图形性能优化设置</h5>
+                        <h5 class="modal-title" id="graphicOptimizationModalLabel">图形性能显示设置</h5>
                     </div>
-                    <div class="modal-body">
-                        开启图形性能优化可能会对设备性能产生影响。您确定要进行此操作吗？
-                    </div>
+                    <div class="modal-body">优化Android设备的图形性能和显示效果。您确定要进行此操作吗？</div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-primary" id="confirmGraphicOptimizationBtn">确认</button>
@@ -258,15 +261,20 @@
             </div>
         </div>
 
-        <div class="modal fade" id="apatchReadableModal" tabindex="-1" aria-labelledby="apatchReadableModalLabel"
-            aria-hidden="true">
+        <!-- APatch-KSU 可读写模态框 -->
+        <div class="modal fade" id="apatchReadableModal" tabindex="-1" aria-labelledby="apatchReadableModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="apatchReadableModalLabel">APatch-KSU可读写设置</h5>
+                        <h5 class="modal-title" id="apatchReadableModalLabel">APatch-KernelSU分区可读写设置</h5>
                     </div>
                     <div class="modal-body">
-                        此功能只支持 APatch 与 KSU 通过 OverlayFS 实现分区可读写。您确定要开启吗？开启后重启！
+                        此功能只支持APatch与KSU通过OverlayFS实现分区可读写。您确定要开启吗？建议重启！
+                        <br>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="restartCheckbox">
+                            <label class="form-check-label" for="restartCheckbox">重启设备</label>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -277,11 +285,12 @@
         </div>
     </div>
 
+    <!-- 引入 Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+    <!-- 引入 highlight.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script type="module">
-
+    <script>
+        // 定义回调计数器变量
         let callbackSequenceNumber = 0;
         let logEntries = [];
         let currentPage = 1;
@@ -289,54 +298,38 @@
 
         function execCommand(command, args = {}) {
             return new Promise((resolve, reject) => {
-
+                // 生成唯一的回调函数名称
                 let callbackName = `exec_callback_${Date.now()}_${callbackSequenceNumber++}`;
                 window[callbackName] = (errno, stdout, stderr) => {
                     if (errno === 0) {
                         resolve({ errno, stdout, stderr });
                     } else {
+                        const errorMessage = `执行 ${command} 时出错：错误号 ${errno}，标准错误信息：${stderr}`;
+                        console.error(errorMessage);
                         reject({ errno, stdout, stderr });
                     }
-
                     delete window[callbackName];
                 };
                 ksu.exec(command, JSON.stringify(args), callbackName);
             });
         }
 
-        function handleError(operation, error) {
-            let errorMessage = `执行 ${operation} 时出错：详细信息如下：`;
-            if (error instanceof Error) {
-                errorMessage += `错误消息：${error.message}`;
-            } else {
-                errorMessage += `错误信息：${error}`;
-            }
-            console.error(errorMessage);
-            alert(errorMessage);
-
-            throw new Error(errorMessage);
-        }
-
         async function readLogFile() {
             try {
-                console.log("尝试读取日志文件...");
                 let { errno, stdout, stderr } = await execCommand("cat /data/adb/modules/WebUI/scripts/ll/log/配置.log");
                 if (errno === 0) {
                     return stdout || "日志文件为空。";
                 } else {
-                    handleError('读取日志文件', `读取日志文件时出错：错误号 ${errno}，标准错误信息：${stderr}`);
-                    return null;
+                    throw new Error(`读取日志文件时出错：错误号 ${errno}，标准错误信息：${stderr}`);
                 }
             } catch (error) {
-                handleError('读取日志文件', error);
-                return null;
+                throw error;
             }
         }
 
         async function processLogDisplay() {
             const logText = await readLogFile();
             if (logText) {
-
                 let processedLog = logText.replace(/ERROR/g, '<span class="error">ERROR</span>');
                 document.getElementById("logContent").innerHTML = processedLog;
             } else {
@@ -347,24 +340,20 @@
 
         async function clearLog() {
             try {
-                if (confirm('您确定要清空日志文件吗？此操作无法撤销。')) {
-                    console.log("尝试清空日志文件...");
-                    let { errno, stdout, stderr } = await execCommand('rm -f /data/adb/modules/WebUI/scripts/ll/log/配置.log');
-                    if (errno === 0) {
-                        document.getElementById("logContent").textContent = "日志文件清空成功。";
-                        await processLogDisplay();
-                    } else {
-                        handleError('清空日志文件', `清空日志文件时出错：错误号 ${errno}，标准错误信息：${stderr}`);
-                    }
+                let { errno, stdout, stderr } = await execCommand('rm -f /data/adb/modules/WebUI/scripts/ll/log/配置.log');
+                if (errno === 0) {
+                    document.getElementById("logContent").textContent = "日志文件清空成功。";
+                    await processLogDisplay();
+                } else {
+                    throw new Error(`清空日志文件时出错：错误号 ${errno}，标准错误信息：${stderr}`);
                 }
             } catch (error) {
-                handleError('清空日志文件', error);
+                throw error;
             }
         }
 
         async function enableGraphicOptimization() {
             try {
-                console.log("开启图形性能优化...");
                 let commands = [
                     "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.enable true",
                     "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.timeout 10",
@@ -375,19 +364,17 @@
                 ];
                 for (let command of commands) {
                     let { errno, stdout, stderr } = await execCommand(command);
-                    if (errno!== 0) {
-                        handleError('开启图形性能优化', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                    if (errno !== 0) {
+                        throw new Error(`执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
                     }
                 }
-                console.log("图形性能优化开启成功。");
             } catch (error) {
-                handleError('开启图形性能优化', error);
+                throw error;
             }
         }
 
         async function disableGraphicOptimization() {
             try {
-                console.log("关闭图形性能优化...");
                 let commands = [
                     "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.enable reset",
                     "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.timeout reset",
@@ -398,45 +385,50 @@
                 ];
                 for (let command of commands) {
                     let { errno, stdout, stderr } = await execCommand(command);
-                    if (errno!== 0) {
-                        handleError('关闭图形性能优化', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                    if (errno !== 0) {
+                        throw new Error(`执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
                     }
                 }
-                console.log("图形性能优化关闭成功。");
             } catch (error) {
-                handleError('关闭图形性能优化', error);
+                throw error;
             }
         }
 
         async function enableApatchReadable() {
             try {
-                console.log("开启 APatch-KSU 可读写...");
                 let commands = [
                     "su -c mkdir -p /data/adb/modules/.rw/{system,vendor,system_ext,product}/{upperdir,workdir}"
                 ];
                 for (let command of commands) {
                     let { errno, stdout, stderr } = await execCommand(command);
-                    if (errno!== 0) {
-                        handleError('开启 APatch-KSU 可读写', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                    if (errno !== 0) {
+                        throw new Error(`执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
                     }
                 }
-                console.log("APatch-KSU 可读写开启成功。");
             } catch (error) {
-                handleError('开启 APatch-KSU 可读写', error);
+                throw error;
             }
         }
 
         async function disableApatchReadable() {
             try {
-                console.log("关闭 APatch-KSU 可读写...");
                 let command = 'rm -rf /data/adb/modules/.rw';
                 let { errno, stdout, stderr } = await execCommand(command);
-                if (errno!== 0) {
-                    handleError('关闭 APatch-KSU 可读时出错', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                if (errno !== 0) {
+                    throw new Error(`执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
                 }
-                console.log("APatch-KSU 可读写关闭成功。");
             } catch (error) {
-                handleError('关闭 APatch-KSU 可读时出错', error);
+                throw error;
+            }
+        }
+
+        async function checkMagiskDb() {
+            try {
+                let { errno } = await execCommand('magisk -v');
+                return errno === 0;
+            } catch (error) {
+                console.error("检查 magisk 时出错:", error);
+                return false;
             }
         }
 
@@ -444,21 +436,24 @@
             const logContent = document.getElementById("logContent");
             const refreshLogBtn = document.getElementById("refreshLogBtn");
             const clearLogBtn = document.getElementById("clearLogBtn");
-            const openThermalSettingsBtn = document.getElementById("openThermalSettingsBtn"); 
+            const openThermalSettingsBtn = document.getElementById("openThermalSettingsBtn");
             const confirmClearModal = new bootstrap.Modal(document.getElementById("confirmClearModal"), { keyboard: false });
             const confirmClearBtn = document.getElementById("confirmClearBtn");
-
             const graphicOptimizationSwitch = document.getElementById("graphicOptimizationSwitch");
-
             const searchOption = document.getElementById("searchOption");
-
             const greenDotOption = document.getElementById("greenDotOption");
-
             const apatchReadableSwitch = document.getElementById("apatchReadableSwitch");
 
-            const logContentContainer = document.getElementById("logContentContainer");
+            const magiskDbExists = await checkMagiskDb();
+            if (magiskDbExists) {
+                apatchReadableSwitch.disabled = true;
+            } else {
+                apatchReadableSwitch.disabled = false;
+            }
+
             let isDragging = false;
             let offset = { x: 0, y: 0 };
+            const logContentContainer = document.getElementById("logContentContainer");
 
             logContentContainer.addEventListener('mousedown', (e) => {
                 isDragging = true;
@@ -488,12 +483,10 @@
 
             openThermalSettingsBtn.addEventListener("click", async () => {
                 try {
-                    console.log("尝试打开三星温控设置...");
                     await execCommand("am start -n com.sec.android.sdhms/com.sec.android.sdhms.debugger.ui.ThermalLimitStatusActivity");
-                    console.log("三星温控设置已打开。");
                 } catch (error) {
-                    handleError("打开三星温控设置", error);
-                    console.error('打开三星温控设置出错。错误信息:', error);
+                    const errorMessage = "打开三星温控设置时出错：详细信息如下：错误消息：" + error.message;
+                    console.error(errorMessage);
                 }
             });
 
@@ -505,19 +498,17 @@
                         try {
                             await enableGraphicOptimization();
                             graphicOptimizationModal.hide();
-                            console.log('图形性能优化开启成功。');
                         } catch (error) {
-                            handleError("开启图形性能优化", error);
-                            console.error('开启图形性能优化出错。错误信息:', error);
+                            const errorMessage = "开启图形性能优化时出错：详细信息如下：错误消息：" + error.message;
+                            console.error(errorMessage);
                         }
                     });
                 } else {
                     try {
                         await disableGraphicOptimization();
-                        console.log('图形性能优化关闭成功。');
                     } catch (error) {
-                        handleError("关闭图形性能优化", error);
-                        console.error('关闭图形性能优化出错。错误信息:', error);
+                        const errorMessage = "关闭图形性能优化时出错：详细信息如下：错误消息：" + error.message;
+                        console.error(errorMessage);
                     }
                 }
             });
@@ -529,20 +520,22 @@
                     document.getElementById('confirmApatchReadableBtn').addEventListener('click', async () => {
                         try {
                             await enableApatchReadable();
+                            const restartCheckbox = document.getElementById('restartCheckbox');
+                            if (restartCheckbox.checked) {
+                                await execCommand('reboot');
+                            }
                             apatchReadableModal.hide();
-                            console.log('APatch-KSU 可读写开启成功。');
                         } catch (error) {
-                            handleError("开启 APatch-KSU 可读写", error);
-                            console.error('开启 APatch-KSU 可读写出错。错误信息:', error);
+                            const errorMessage = "开启 APatch-KSU 可读写时出错：详细信息如下：错误消息：" + error.message;
+                            console.error(errorMessage);
                         }
                     });
                 } else {
                     try {
                         await disableApatchReadable();
-                        console.log('APatch-KSU 可读写关闭成功。');
                     } catch (error) {
-                        handleError("关闭 APatch-KSU 可读时出错", error);
-                        console.error('关闭 APatch-KSU 可读时出错。错误信息:', error);
+                        const errorMessage = "关闭 APatch-KSU 可读时出错：详细信息如下：错误消息：" + error.message;
+                        console.error(errorMessage);
                     }
                 }
             });
@@ -564,7 +557,7 @@
             async function checkGreenDotState() {
                 try {
                     let { errno, stdout } = await execCommand("su -c cmd device_config get privacy location_indicators_enabled");
-                    return errno === 0 && stdout.trim() === "false"? "禁用" : "恢复";
+                    return errno === 0 && stdout.trim() === "false" ? "禁用" : "恢复";
                 } catch (error) {
                     console.error("检查禁用恢复绿点状态时出错:", error);
                     return "未知状态";
@@ -616,32 +609,17 @@
                             searchOption.disabled = true;
                         }
                     } else {
-                        handleError('获取 OneUI 版本', `执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                        const errorMessage = "获取 OneUI 版本时出错：详细信息如下：错误消息：" + (stderr || "未知错误");
+                        console.error(errorMessage);
                     }
                 } catch (error) {
-                    handleError('获取 OneUI 版本', error);
+                    const errorMessage = "获取 OneUI 版本时出错：详细信息如下：错误消息：" + error.message;
+                    console.error(errorMessage);
                 }
             }
 
             searchOption.addEventListener("change", async () => {
-                if (!searchOption.disabled && searchOption.value === "google") {
-                    try {
-                        let commands = [
-                            "su -c pm enable 'com.google.android.googlequicksearchbox'",
-                            "su -c cmd settings put secure cn_support_circe_to_search 1"
-                        ];
-                        for (let command of commands) {
-                            let { errno, stdout, stderr } = await execCommand(command);
-                            if (errno!== 0) {
-                                handleError(command, `执行命令时出错: ${stderr || "未知错误"}`);
-                            }
-                        }
-                        console.log("设置为谷歌成功。");
-                    } catch (error) {
-                        handleError("设置为谷歌", error);
-                        console.error('设置为谷歌出错。错误信息:', error);
-                    }
-                } else if (!searchOption.disabled && searchOption.value === "baidu") {
+                if (searchOption.value === "baidu") {
                     try {
                         let commands = [
                             "su -c pm disable-user 'com.google.android.googlequicksearchbox'",
@@ -649,14 +627,31 @@
                         ];
                         for (let command of commands) {
                             let { errno, stdout, stderr } = await execCommand(command);
-                            if (errno!== 0) {
-                                handleError(command, `执行命令时出错: ${stderr || "未知错误"}`);
+                            if (errno !== 0) {
+                                const errorMessage = `执行命令时出错: ${stderr || "未知错误"}`;
+                                console.error(errorMessage);
                             }
                         }
-                        console.log("设置为百度成功。");
                     } catch (error) {
-                        handleError("设置为百度", error);
-                        console.error('设置为百度出错。错误信息:', error);
+                        const errorMessage = "设置为百度时出错：详细信息如下：错误消息：" + error.message;
+                        console.error(errorMessage);
+                    }
+                } else if (searchOption.value === "google") {
+                    try {
+                        let commands = [
+                            "su -c pm enable 'com.google.android.googlequicksearchbox'",
+                            "su -c cmd settings put secure cn_support_circe_to_search 1"
+                        ];
+                        for (let command of commands) {
+                            let { errno, stdout, stderr } = await execCommand(command);
+                            if (errno !== 0) {
+                                const errorMessage = `执行命令时出错: ${stderr || "未知错误"}`;
+                                console.error(errorMessage);
+                            }
+                        }
+                    } catch (error) {
+                        const errorMessage = "设置为谷歌时出错：详细信息如下：错误消息：" + error.message;
+                        console.error(errorMessage);
                     }
                 }
             });
@@ -670,9 +665,8 @@
                         ];
                         for (const command of commands) {
                             let { errno } = await execCommand(command);
-                            if (errno!== 0) throw new Error(`执行命令时出错`);
+                            if (errno !== 0) throw new Error(`执行命令时出错`);
                         }
-                        console.log("禁用绿点成功。");
                     } catch (error) {
                         console.error("禁用绿点时出错:", error);
                     }
@@ -684,9 +678,8 @@
                         ];
                         for (const command of commands) {
                             let { errno } = await execCommand(command);
-                            if (errno!== 0) throw new Error(`执行命令时出错`);
+                            if (errno !== 0) throw new Error(`执行命令时出错`);
                         }
-                        console.log("恢复绿点成功。");
                     } catch (error) {
                         console.error("恢复绿点时出错:", error);
                     }
@@ -697,30 +690,16 @@
             function startAutoRefresh() {
                 logRefreshInterval = setInterval(processLogDisplay, 5000);
             }
+
             function stopAutoRefresh() {
                 clearInterval(logRefreshInterval);
             }
 
             startAutoRefresh();
-
             window.addEventListener('beforeunload', stopAutoRefresh);
 
             await checkPreviousStates();
             await processLogDisplay();
-
-            function adaptResolution() {
-                const container = document.querySelector('.container');
-                if (container) {
-                    const windowWidth = window.innerWidth;
-                    const windowHeight = window.innerHeight;
-                    container.style.width = windowWidth + 'px';
-                    container.style.height = windowHeight + 'px';
-
-                    const baseFontSize = 16;
-                    const scaleFactor = Math.min(windowWidth / 1920, windowHeight / 1080);
-                    document.documentElement.style.fontSize = baseFontSize * scaleFactor + 'px';
-                }
-            }
 
             function debounce(func, delay) {
                 let timer;
@@ -736,15 +715,27 @@
 
             window.addEventListener('resize', debouncedAdaptResolution);
 
+            function adaptResolution() {
+                const container = document.querySelector('.container');
+                if (container) {
+                    const windowWidth = window.innerWidth;
+                    const windowHeight = window.innerHeight;
+                    container.style.width = windowWidth + 'px';
+                    container.style.height = windowHeight + 'px';
+                    const baseFontSize = 16;
+                    const scaleFactor = Math.min(windowWidth / 1920, windowHeight / 1080);
+                    document.documentElement.style.fontSize = baseFontSize * scaleFactor + 'px';
+                }
+            }
+
             adaptResolution();
 
             function checkAndApplyDarkMode() {
                 if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
                     document.body.classList.add('dark-mode');
-
                     document.querySelector('h1.text-blue').style.color = '#007BFF';
                     document.querySelectorAll('body.dark-mode *').forEach(element => {
-                        if (element.tagName!== 'H1') {
+                        if (element.tagName !== 'H1') {
                             element.style.color = '#000';
                         }
                     });
