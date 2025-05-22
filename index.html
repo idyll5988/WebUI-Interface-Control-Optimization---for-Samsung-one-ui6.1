@@ -80,7 +80,6 @@
             font-size: 14px;
         }
 
-        /* 图形性能优化开关的模态框样式 */
         #graphicOptimizationModal .modal-content {
             background-color: #f5f5f5;
             border: 2px solid #888;
@@ -96,7 +95,6 @@
             font-size: 14px;
         }
 
-        /* 日志内容字体美化 */
         .log-content code {
             font-family: 'Consolas', monospace;
             font-size: 14px;
@@ -107,12 +105,10 @@
             text-shadow: 1px 1px 1px #aaa;
         }
 
-        /* 错误信息用红色显示 */
         .log-content code span.error {
             color: #ff0000;
         }
 
-        /* 黑暗模式样式跟随系统 */
         @media (prefers-color-scheme: dark) {
             body {
                 background-color: #333;
@@ -176,7 +172,9 @@
 
             #confirmClearModal .modal-body,
             #graphicOptimizationModal .modal-body,
-            #apatchReadableModal .modal-body {
+            #apatchReadableModal .modal-body,
+            #lowHeatModeModal .modal-body,
+            #intelligentSleepModeModal .modal-body {
                 color: #000;
             }
         }
@@ -193,32 +191,29 @@
         <div class="button-group">
             <button id="refreshLogBtn" class="btn btn-primary">刷新日志</button>
             <button id="clearLogBtn" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmClearModal">清空日志</button>
-            <button id="openThermalSettingsBtn" class="btn btn-info">三星温控设置</button>
         </div>
 
-        <!-- 添加图形性能优化部分 -->
         <form id="systemOptimizationForm">
             <div class="form-check form-switch">
-                <label for="graphicOptimizationSwitch">图形性能显示优化</label>
+                <label for="graphicOptimizationSwitch">SurfaceFlinger优化</label>
                 <input class="form-check-input" type="checkbox" role="switch" id="graphicOptimizationSwitch">
             </div>
+			
+            <div class="form-check form-switch">
+                <label for="intelligentSleepModeSwitch">智能休眠模式</label>
+                <input class="form-check-input" type="checkbox" role="switch" id="intelligentSleepModeSwitch">
+            </div>
 
-            <!-- 添加新功能 APatch-KSU可读写 -->
+            <div class="form-check form-switch">
+                <label for="lowHeatModeSwitch">低热量模式</label>
+                <input class="form-check-input" type="checkbox" role="switch" id="lowHeatModeSwitch">
+            </div>
+
             <div class="form-check form-switch">
                 <label for="apatchReadableSwitch">APatch-KSU分区读写</label>
                 <input class="form-check-input" type="checkbox" role="switch" id="apatchReadableSwitch">
             </div>
 
-            <!-- 添加谷歌百度选项 -->
-            <div class="form-group">
-                <label for="searchOption">谷歌与百度识屏切换：</label>
-                <select id="searchOption">
-                    <option value="google">谷歌</option>
-                    <option value="baidu">百度</option>
-                </select>
-            </div>
-
-            <!-- 添加禁用恢复绿点选项 -->
             <div class="form-group">
                 <label for="greenDotOption">禁用与恢复绿点切换：</label>
                 <select id="greenDotOption">
@@ -228,7 +223,6 @@
             </div>
         </form>
 
-        <!-- 清空日志确认模态框 -->
         <div class="modal fade" id="confirmClearModal" tabindex="-1" aria-labelledby="confirmClearModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -245,14 +239,19 @@
             </div>
         </div>
 
-        <!-- 图形性能优化模态框 -->
         <div class="modal fade" id="graphicOptimizationModal" tabindex="-1" aria-labelledby="graphicOptimizationModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="graphicOptimizationModalLabel">图形性能显示设置</h5>
+                        <h5 class="modal-title" id="graphicOptimizationModalLabel">SurfaceFlinger设置</h5>
                     </div>
-                    <div class="modal-body">优化Android设备的图形性能和显示效果。您确定要进行此操作吗？</div>
+                    <div class="modal-body">
+                        <p>SurfaceFlinger配置优化</p>
+                        <ul>
+                            <li>开启: 启用VSync并缩短超时时间（提升同步精度）优化图层合成策略（减少延迟）</li>
+                        </ul>
+                        您确定要开启吗？
+                    </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
                         <button type="button" class="btn btn-primary" id="confirmGraphicOptimizationBtn">确认</button>
@@ -261,7 +260,28 @@
             </div>
         </div>
 
-        <!-- APatch-KSU 可读写模态框 -->
+        <div class="modal fade" id="intelligentSleepModeModal" tabindex="-1" aria-labelledby="intelligentSleepModeModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="intelligentSleepModeModalLabel">智能休眠模式设置</h5>
+                    </div>
+                    <div class="modal-body">
+                        <p>核心功能: 该模式控制后台进程的存活率和待机续航之间的平衡</p>
+                        <ul>
+                            <li>开启: 后台进程存活率所有应用提升至60-70%，待机续航（24小时）可能损耗12-18%电量</li>
+                            <li>关闭: 后台进程存活率普通应用<30%，系统应用>80%，待机续航（24小时）约损耗5-8%电量</li>
+                        </ul>
+                        您确定要开启吗？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="confirmIntelligentSleepModeBtn">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="modal fade" id="apatchReadableModal" tabindex="-1" aria-labelledby="apatchReadableModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -283,14 +303,33 @@
                 </div>
             </div>
         </div>
+
+        <div class="modal fade" id="lowHeatModeModal" tabindex="-1" aria-labelledby="lowHeatModeModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="lowHeatModeModalLabel">低热量模式设置</h5>
+                    </div>
+                    <div class="modal-body">
+                        核心功能: 该模式通过主动限制性能、降低功耗来减少设备发热，类似于"温控降频"机制
+                        <ul>
+                            <li>开启:性能释放：CPU/GPU可满血运行，充电功率不受软件限制（仍需硬件支持）</li>
+                            <li>关闭:CPU/GPU负载降低，热量产生减少，功耗下降可能提升电池续航</li>
+                        </ul>
+                        您确定要开启吗？
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                        <button type="button" class="btn btn-primary" id="confirmLowHeatModeBtn">确认</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- 引入 Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- 引入 highlight.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
     <script>
-        // 定义回调计数器变量
         let callbackSequenceNumber = 0;
         let logEntries = [];
         let currentPage = 1;
@@ -298,7 +337,6 @@
 
         function execCommand(command, args = {}) {
             return new Promise((resolve, reject) => {
-                // 生成唯一的回调函数名称
                 let callbackName = `exec_callback_${Date.now()}_${callbackSequenceNumber++}`;
                 window[callbackName] = (errno, stdout, stderr) => {
                     if (errno === 0) {
@@ -355,12 +393,9 @@
         async function enableGraphicOptimization() {
             try {
                 let commands = [
-                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.enable true",
-                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.timeout 10",
-                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.interpolation false",
-                    "su -c cmd device_config put surfaceflinger surfaceflinger.layers.max 100",
-                    "su -c cmd device_config put surfaceflinger surfaceflinger.layers.default 10",
-                    "su -c cmd device_config put surfaceflinger set_max_frame_rate_multiplier 0.5"
+                    "cmd device_config put surfaceflinger surfaceflinger.vsync.enable true",
+                    "cmd device_config put surfaceflinger surfaceflinger.vsync.timeout 5",
+                    "cmd device_config put surfaceflinger surfaceflinger.use_content_detection_for_refresh_rate true"
                 ];
                 for (let command of commands) {
                     let { errno, stdout, stderr } = await execCommand(command);
@@ -376,12 +411,9 @@
         async function disableGraphicOptimization() {
             try {
                 let commands = [
-                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.enable reset",
-                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.timeout reset",
-                    "su -c cmd device_config put surfaceflinger surfaceflinger.vsync.interpolation reset",
-                    "su -c cmd device_config put surfaceflinger surfaceflinger.layers.max reset",
-                    "su -c cmd device_config put surfaceflinger surfaceflinger.layers.default reset",
-                    "su -c cmd device_config put surfaceflinger set_max_frame_rate_multiplier reset"
+                    "cmd device_config put surfaceflinger surfaceflinger.vsync.enable reset",
+                    "cmd device_config put surfaceflinger surfaceflinger.vsync.timeout reset",
+                    "cmd device_config put surfaceflinger surfaceflinger.use_content_detection_for_refresh_rate true"
                 ];
                 for (let command of commands) {
                     let { errno, stdout, stderr } = await execCommand(command);
@@ -397,7 +429,7 @@
         async function enableApatchReadable() {
             try {
                 let commands = [
-                    "su -c mkdir -p /data/adb/modules/.rw/{system,vendor,system_ext,product}/{upperdir,workdir}"
+                    "mkdir -p /data/adb/modules/.rw/{system,vendor,system_ext,product}/{upperdir,workdir}"
                 ];
                 for (let command of commands) {
                     let { errno, stdout, stderr } = await execCommand(command);
@@ -422,6 +454,100 @@
             }
         }
 
+        async function enableLowHeatMode() {
+            try {
+                let command = "cmd device_config put thermal sem_low_heat_mode 0";  
+                let { errno, stdout, stderr } = await execCommand(command);
+                if (errno !== 0) {
+                    throw new Error(`执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                }
+
+                await updateLowHeatModeUI();
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function disableLowHeatMode() {
+            try {
+                let command = "cmd device_config put thermal sem_low_heat_mode 1";  
+                let { errno, stdout, stderr } = await execCommand(command);
+                if (errno !== 0) {
+                    throw new Error(`执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                }
+
+                await updateLowHeatModeUI();
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function checkLowHeatModeState() {
+            try {
+                let { errno, stdout, stderr } = await execCommand("cmd device_config get thermal sem_low_heat_mode");
+                if (errno === 0 && stdout.trim() === "0") {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                console.error("检查低热量模式状态时出错:", error);
+                return false;
+            }
+        }
+
+        async function updateLowHeatModeUI() {
+            const isEnabled = await checkLowHeatModeState();
+            lowHeatModeSwitch.checked = isEnabled;
+        }
+
+        async function enableIntelligentSleepMode() {
+            try {
+                let command = "cmd device_config put sem_power intelligent_sleep_mode 0";  
+                let { errno, stdout, stderr } = await execCommand(command);
+                if (errno !== 0) {
+                    throw new Error(`执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                }
+
+                await updateIntelligentSleepModeUI();
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function disableIntelligentSleepMode() {
+            try {
+                let command = "cmd device_config put sem_power intelligent_sleep_mode 1";  
+                let { errno, stdout, stderr } = await execCommand(command);
+                if (errno !== 0) {
+                    throw new Error(`执行命令时出错：错误号 ${errno}，标准错误信息：${stderr}`);
+                }
+
+                await updateIntelligentSleepModeUI();
+            } catch (error) {
+                throw error;
+            }
+        }
+
+        async function checkIntelligentSleepModeState() {
+            try {
+                let { errno, stdout, stderr } = await execCommand("cmd device_config get sem_power intelligent_sleep_mode");
+                if (errno === 0 && stdout.trim() === "0") {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                console.error("检查智能休眠模式状态时出错:", error);
+                return false;
+            }
+        }
+
+        async function updateIntelligentSleepModeUI() {
+            const isEnabled = await checkIntelligentSleepModeState();
+            intelligentSleepModeSwitch.checked = isEnabled;
+        }
+
         async function checkMagiskDb() {
             try {
                 let { errno } = await execCommand('magisk -v');
@@ -436,13 +562,13 @@
             const logContent = document.getElementById("logContent");
             const refreshLogBtn = document.getElementById("refreshLogBtn");
             const clearLogBtn = document.getElementById("clearLogBtn");
-            const openThermalSettingsBtn = document.getElementById("openThermalSettingsBtn");
             const confirmClearModal = new bootstrap.Modal(document.getElementById("confirmClearModal"), { keyboard: false });
             const confirmClearBtn = document.getElementById("confirmClearBtn");
             const graphicOptimizationSwitch = document.getElementById("graphicOptimizationSwitch");
-            const searchOption = document.getElementById("searchOption");
             const greenDotOption = document.getElementById("greenDotOption");
             const apatchReadableSwitch = document.getElementById("apatchReadableSwitch");
+            const lowHeatModeSwitch = document.getElementById("lowHeatModeSwitch");
+            const intelligentSleepModeSwitch = document.getElementById("intelligentSleepModeSwitch");
 
             const magiskDbExists = await checkMagiskDb();
             if (magiskDbExists) {
@@ -481,53 +607,90 @@
                 confirmClearBtn.addEventListener("click", clearLog);
             });
 
-            openThermalSettingsBtn.addEventListener("click", async () => {
-                try {
-                    await execCommand("am start -n com.sec.android.sdhms/com.sec.android.sdhms.debugger.ui.ThermalLimitStatusActivity");
-                } catch (error) {
-                    const errorMessage = "打开三星温控设置时出错：详细信息如下：错误消息：" + error.message;
-                    console.error(errorMessage);
-                }
-            });
-
             graphicOptimizationSwitch.addEventListener("change", async () => {
+                const initialState = graphicOptimizationSwitch.checked;
+                
                 if (graphicOptimizationSwitch.checked) {
                     const graphicOptimizationModal = new bootstrap.Modal(document.getElementById('graphicOptimizationModal'), { keyboard: false });
                     graphicOptimizationModal.show();
-                    document.getElementById('confirmGraphicOptimizationBtn').addEventListener('click', async () => {
+
+                    const confirmBtn = document.getElementById('confirmGraphicOptimizationBtn');
+                    const cancelBtn = document.querySelector('#graphicOptimizationModal .btn-secondary');
+
+                    confirmBtn.removeEventListener('click', confirmHandler);
+                    cancelBtn.removeEventListener('click', cancelHandler);
+
+                    function confirmHandler() {
                         try {
-                            await enableGraphicOptimization();
+                            enableGraphicOptimization();
                             graphicOptimizationModal.hide();
                         } catch (error) {
-                            const errorMessage = "开启图形性能优化时出错：详细信息如下：错误消息：" + error.message;
+                            const errorMessage = "开启SurfaceFlinger优化时出错：详细信息如下：错误消息：" + error.message;
                             console.error(errorMessage);
+                        }
+                    }
+
+                    function cancelHandler() {
+                        graphicOptimizationSwitch.checked = initialState;
+                        graphicOptimizationModal.hide();
+                    }
+                    
+                    confirmBtn.addEventListener('click', confirmHandler);
+                    cancelBtn.addEventListener('click', cancelHandler);
+                    
+                    graphicOptimizationModal._element.addEventListener('hidden.bs.modal', () => {
+                        if (graphicOptimizationSwitch.checked !== initialState) {
+                            graphicOptimizationSwitch.checked = initialState;
                         }
                     });
                 } else {
                     try {
                         await disableGraphicOptimization();
                     } catch (error) {
-                        const errorMessage = "关闭图形性能优化时出错：详细信息如下：错误消息：" + error.message;
+                        const errorMessage = "关闭SurfaceFlinger优化时出错：详细信息如下：错误消息：" + error.message;
                         console.error(errorMessage);
                     }
                 }
             });
 
             apatchReadableSwitch.addEventListener("change", async () => {
+                const initialState = apatchReadableSwitch.checked;
+                
                 if (apatchReadableSwitch.checked) {
                     const apatchReadableModal = new bootstrap.Modal(document.getElementById('apatchReadableModal'), { keyboard: false });
                     apatchReadableModal.show();
-                    document.getElementById('confirmApatchReadableBtn').addEventListener('click', async () => {
+                    
+                    const confirmBtn = document.getElementById('confirmApatchReadableBtn');
+                    const cancelBtn = document.querySelector('#apatchReadableModal .btn-secondary');
+                    
+                    confirmBtn.removeEventListener('click', confirmHandler);
+                    cancelBtn.removeEventListener('click', cancelHandler);
+                    
+                    function confirmHandler() {
                         try {
-                            await enableApatchReadable();
+                            enableApatchReadable();
                             const restartCheckbox = document.getElementById('restartCheckbox');
                             if (restartCheckbox.checked) {
-                                await execCommand('reboot');
+                                execCommand('reboot');
                             }
                             apatchReadableModal.hide();
                         } catch (error) {
                             const errorMessage = "开启 APatch-KSU 可读写时出错：详细信息如下：错误消息：" + error.message;
                             console.error(errorMessage);
+                        }
+                    }
+                    
+                    function cancelHandler() {
+                        apatchReadableSwitch.checked = initialState;
+                        apatchReadableModal.hide();
+                    }
+                    
+                    confirmBtn.addEventListener('click', confirmHandler);
+                    cancelBtn.addEventListener('click', cancelHandler);
+                    
+                    apatchReadableModal._element.addEventListener('hidden.bs.modal', () => {
+                        if (apatchReadableSwitch.checked !== initialState) {
+                            apatchReadableSwitch.checked = initialState;
                         }
                     });
                 } else {
@@ -540,23 +703,115 @@
                 }
             });
 
+            lowHeatModeSwitch.addEventListener("change", async () => {
+                const initialState = lowHeatModeSwitch.checked;
+                
+                if (lowHeatModeSwitch.checked) {
+                    const lowHeatModeModal = new bootstrap.Modal(document.getElementById('lowHeatModeModal'), { keyboard: false });
+                    lowHeatModeModal.show();
+                    
+                    const confirmBtn = document.getElementById('confirmLowHeatModeBtn');
+                    const cancelBtn = document.querySelector('#lowHeatModeModal .btn-secondary');
+                    
+                    confirmBtn.removeEventListener('click', confirmHandler);
+                    cancelBtn.removeEventListener('click', cancelHandler);
+                    
+                    function confirmHandler() {
+                        try {
+                            enableLowHeatMode();
+                            lowHeatModeModal.hide();
+                        } catch (error) {
+                            const errorMessage = "开启低热量模式时出错：详细信息如下：错误消息：" + error.message;
+                            console.error(errorMessage);
+                        }
+                    }
+                    
+                    function cancelHandler() {
+                        lowHeatModeSwitch.checked = initialState;
+                        lowHeatModeModal.hide();
+                    }
+                    
+                    confirmBtn.addEventListener('click', confirmHandler);
+                    cancelBtn.addEventListener('click', cancelHandler);
+                    
+                    lowHeatModeModal._element.addEventListener('hidden.bs.modal', () => {
+                        if (lowHeatModeSwitch.checked !== initialState) {
+                            lowHeatModeSwitch.checked = initialState;
+                        }
+                    });
+                } else {
+                    try {
+                        await disableLowHeatMode();
+                    } catch (error) {
+                        const errorMessage = "关闭低热量模式时出错：详细信息如下：错误消息：" + error.message;
+                        console.error(errorMessage);
+                    }
+                }
+            });
+
+            intelligentSleepModeSwitch.addEventListener("change", async () => {
+                const initialState = intelligentSleepModeSwitch.checked;
+                
+                if (intelligentSleepModeSwitch.checked) {
+                    const intelligentSleepModeModal = new bootstrap.Modal(document.getElementById('intelligentSleepModeModal'), { keyboard: false });
+                    intelligentSleepModeModal.show();
+                    
+                    const confirmBtn = document.getElementById('confirmIntelligentSleepModeBtn');
+                    const cancelBtn = document.querySelector('#intelligentSleepModeModal .btn-secondary');
+                    
+                    confirmBtn.removeEventListener('click', confirmHandler);
+                    cancelBtn.removeEventListener('click', cancelHandler);
+                    
+                    function confirmHandler() {
+                        try {
+                            enableIntelligentSleepMode();
+                            intelligentSleepModeModal.hide();
+                        } catch (error) {
+                            const errorMessage = "开启智能休眠模式时出错：详细信息如下：错误消息：" + error.message;
+                            console.error(errorMessage);
+                        }
+                    }
+                    
+                    function cancelHandler() {
+                        intelligentSleepModeSwitch.checked = initialState;
+                        intelligentSleepModeModal.hide();
+                    }
+                    
+                    confirmBtn.addEventListener('click', confirmHandler);
+                    cancelBtn.addEventListener('click', cancelHandler);
+                    
+                    intelligentSleepModeModal._element.addEventListener('hidden.bs.modal', () => {
+                        if (intelligentSleepModeSwitch.checked !== initialState) {
+                            intelligentSleepModeSwitch.checked = initialState;
+                        }
+                    });
+                } else {
+                    try {
+                        await disableIntelligentSleepMode();
+                    } catch (error) {
+                        const errorMessage = "关闭智能休眠模式时出错：详细信息如下：错误消息：" + error.message;
+                        console.error(errorMessage);
+                    }
+                }
+            });
+
             async function checkGraphicOptimizationState() {
                 try {
-                    let { errno, stdout, stderr } = await execCommand("su -c cmd device_config get surfaceflinger surfaceflinger.vsync.enable");
+                    let { errno, stdout, stderr } = await execCommand("cmd device_config get surfaceflinger surfaceflinger.vsync.enable");
                     if (errno === 0 && stdout.trim() === "true") {
                         return true;
                     } else {
                         return false;
                     }
                 } catch (error) {
-                    console.error("检查图形性能优化状态时出错:", error);
+                    console.error("检查SurfaceFlinger优化状态时出错:", error);
                     return false;
                 }
             }
 
             async function checkGreenDotState() {
                 try {
-                    let { errno, stdout } = await execCommand("su -c cmd device_config get privacy location_indicators_enabled");
+                    let { errno, stdout } = await execCommand("cmd device_config get privacy location_indicators_enabled");
                     return errno === 0 && stdout.trim() === "false" ? "禁用" : "恢复";
                 } catch (error) {
                     console.error("检查禁用恢复绿点状态时出错:", error);
@@ -574,94 +829,20 @@
                 }
             }
 
-            async function checkSearchOptionState() {
-                try {
-                    let { errno, stdout, stderr } = await execCommand("su -c cmd settings get secure cn_support_circe_to_search");
-                    if (errno === 0 && stdout.trim() === "1") {
-                        return "google";
-                    } else if (errno === 0 && stdout.trim() === "0") {
-                        return "baidu";
-                    } else {
-                        return "未知选项";
-                    }
-                } catch (error) {
-                    console.error("检查搜索选项状态时出错:", error);
-                    return "未知选项";
-                }
-            }
-
             async function checkPreviousStates() {
                 graphicOptimizationSwitch.checked = await checkGraphicOptimizationState();
                 greenDotOption.value = await checkGreenDotState();
                 apatchReadableSwitch.checked = await checkApatchReadableState();
-                searchOption.value = await checkSearchOptionState();
-
-                try {
-                    let { errno, stdout, stderr } = await execCommand("getprop | grep 'oneui' | awk -F': ' '{print $2}' | tr -d '[]'");
-                    if (errno === 0) {
-                        let value = stdout;
-                        let major = value.split('0')[0];
-                        let minor = value.split('0')[1].charAt(0);
-                        let version = parseFloat(`${major}.${minor}`);
-                        if (version >= 6.1) {
-                            searchOption.disabled = false;
-                        } else {
-                            searchOption.disabled = true;
-                        }
-                    } else {
-                        const errorMessage = "获取 OneUI 版本时出错：详细信息如下：错误消息：" + (stderr || "未知错误");
-                        console.error(errorMessage);
-                    }
-                } catch (error) {
-                    const errorMessage = "获取 OneUI 版本时出错：详细信息如下：错误消息：" + error.message;
-                    console.error(errorMessage);
-                }
+                await updateLowHeatModeUI();
+                await updateIntelligentSleepModeUI();
             }
-
-            searchOption.addEventListener("change", async () => {
-                if (searchOption.value === "baidu") {
-                    try {
-                        let commands = [
-                            "su -c pm disable-user 'com.google.android.googlequicksearchbox'",
-                            "su -c cmd settings put secure cn_support_circe_to_search 0"
-                        ];
-                        for (let command of commands) {
-                            let { errno, stdout, stderr } = await execCommand(command);
-                            if (errno !== 0) {
-                                const errorMessage = `执行命令时出错: ${stderr || "未知错误"}`;
-                                console.error(errorMessage);
-                            }
-                        }
-                    } catch (error) {
-                        const errorMessage = "设置为百度时出错：详细信息如下：错误消息：" + error.message;
-                        console.error(errorMessage);
-                    }
-                } else if (searchOption.value === "google") {
-                    try {
-                        let commands = [
-                            "su -c pm enable 'com.google.android.googlequicksearchbox'",
-                            "su -c cmd settings put secure cn_support_circe_to_search 1"
-                        ];
-                        for (let command of commands) {
-                            let { errno, stdout, stderr } = await execCommand(command);
-                            if (errno !== 0) {
-                                const errorMessage = `执行命令时出错: ${stderr || "未知错误"}`;
-                                console.error(errorMessage);
-                            }
-                        }
-                    } catch (error) {
-                        const errorMessage = "设置为谷歌时出错：详细信息如下：错误消息：" + error.message;
-                        console.error(errorMessage);
-                    }
-                }
-            });
 
             greenDotOption.addEventListener("change", async () => {
                 if (greenDotOption.value === "禁用") {
                     try {
                         const commands = [
-                            "su -c cmd device_config put privacy location_indicators_enabled false default",
-                            "su -c cmd device_config put privacy camera_mic_icons_enabled false default"
+                            "cmd device_config put privacy location_indicators_enabled false default",
+                            "cmd device_config put privacy camera_mic_icons_enabled false default"
                         ];
                         for (const command of commands) {
                             let { errno } = await execCommand(command);
@@ -673,8 +854,8 @@
                 } else {
                     try {
                         const commands = [
-                            "su -c cmd device_config put privacy location_indicators_enabled true default",
-                            "su -c cmd device_config put privacy camera_mic_icons_enabled true default"
+                            "cmd device_config put privacy location_indicators_enabled true default",
+                            "cmd device_config put privacy camera_mic_icons_enabled true default"
                         ];
                         for (const command of commands) {
                             let { errno } = await execCommand(command);
@@ -750,4 +931,4 @@
     </script>
 </body>
 
-</html>
+</html>    
